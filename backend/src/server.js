@@ -6,9 +6,10 @@ import messageRoutes from './routes/message.route.js';
 import { connectDB } from './lib/db.js';
 import { ENV } from "./lib/env.js";
 
+const __dirname = path.resolve();
+
 const app = express();
 const PORT = ENV.PORT || 3000;
-const __dirname = path.resolve();
 
 app.use(express.json());
 
@@ -17,16 +18,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 // ✅ SERVE FRONTEND AFTER API ROUTES
-if (ENV.NODE_ENV === 'production') {
+if (ENV.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-    const frontendPath = path.join(__dirname, 'frontend', 'dist');
-
-    app.use(express.static(frontendPath));
-
-    app.get("*", (req, res) => {
-        res.sendFile(path.join(frontendPath, "index.html"));
-    });
-
+  app.get("*", (_, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
 }
 
 app.listen(PORT, () => {
