@@ -61,7 +61,7 @@ export const sendMessage = async (req, res) => {
 
 export const getChatpartners = async (req, res) => {
   try {
-    const loggedInUserId = req.user._id;
+    const loggedInUserId = req.user._id.toString();
     //find all messages where logged in user is either sender or receiver
     const messages = await Message.find({
       $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
