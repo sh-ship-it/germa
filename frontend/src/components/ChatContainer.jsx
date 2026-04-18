@@ -6,21 +6,25 @@ import NoChatHistoryPlaceHolder from "./NoChatHistoryPlaceHolder"
 import MessageInput from "./MessageInput"
 
 import MessageLoadingSkeleton from "./MessageLoadingSkeleton"
+// import { use } from "react"
 const ChatContainer = () => {
-  const { selectedUser, getMessagesByUserId , messages ,isMessagesLoading } = useChatStore();
+  const { selectedUser, getMessagesByUserId , messages ,isMessagesLoading ,subscribeToMessages ,unsubscribeFromMessages } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(()=>{
     getMessagesByUserId(selectedUser._id);
-  },[selectedUser, getMessagesByUserId])
+    subscribeToMessages()
+
+    return ()=>unsubscribeFromMessages();
+  },[selectedUser, getMessagesByUserId , subscribeToMessages , unsubscribeFromMessages ])
 
   useEffect(()=>{
     if(messageEndRef.current){
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   },[messages])
-
+  
 
   return (
     <>

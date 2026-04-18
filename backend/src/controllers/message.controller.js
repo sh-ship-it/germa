@@ -1,6 +1,8 @@
 import cloudinary from "../lib/cloudinary.js";
+import { getRecieverSocketId } from "../lib/socket.js";
 import Message from "../model/message.js";
 import User from "../model/User.js";
+import { io } from "../lib/socket.js";
 
 export const getAllContatcts = async (req, res) => {
   try {
@@ -51,8 +53,13 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
     await newMessage.save();
-    res.status(200).json(newMessage);
+    
+    const recieverSocketId = getRecieverSocketId(receiverId);
+    if(recieverSocketId){
+      io.to(recieverSocketId).emit("newMessage", newMessage);
+    }
     //send mesage in real time if user is online using socket io
+    res.status(200).json(newMessage);
   } catch (error) {
     console.log("error in sendMessage controoller", error);
     res.status(500).json({ error: "Internal server error" });
