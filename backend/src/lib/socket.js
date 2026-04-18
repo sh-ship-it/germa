@@ -10,8 +10,10 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [ENV.CLIENT_URL],
+    methods: ["GET", "POST"],
     credentials: true,
   },
+  transports: ["polling", "websocket"],
 });
 
 io.use(socketAuthMiddleware);
