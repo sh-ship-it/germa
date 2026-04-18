@@ -5,8 +5,8 @@ import authRoutes from './routes/auth.route.js';
 import messageRoutes from './routes/message.route.js';
 import { connectDB } from './lib/db.js';
 import { ENV } from "./lib/env.js";
-
-const app = express();
+import { app } from './lib/socket.js';
+import { server } from './lib/socket.js';
 
 const PORT = ENV.PORT || 3000;
 
@@ -27,7 +27,7 @@ app.get("/", (_, res) => {
 
 connectDB();
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}`);
 });
 
