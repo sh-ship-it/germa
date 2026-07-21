@@ -9,13 +9,20 @@ import { redisClient } from "./redis.js";
 const app = express();
 const server = http.createServer(app);
 
+// Build allowed origins for Socket.io (same logic as Express CORS in server.js)
+const socketOrigins = [];
+if (ENV.CLIENT_URL) {
+  socketOrigins.push(ENV.CLIENT_URL.replace(/\/+$/, ""));
+}
+socketOrigins.push("http://localhost:5173", "http://localhost:3000");
+
 const io = new Server(server, {
   cors: {
-    origin: [ENV.CLIENT_URL],
+    origin: socketOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   },
-  transports: ["polling", "websocket"],
+  transports: ["websocket", "polling"],
 });
 
 // Setup Redis adapter for cross-instance pub/sub synchronization

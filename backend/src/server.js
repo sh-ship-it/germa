@@ -16,15 +16,34 @@ app.set("trust proxy", 1);
 
 app.use(express.json({ limit: '5mb' }));
 
+// ── CORS ──────────────────────────────────────────────────────────────────────
+// Build allowedOrigins from CLIENT_URL env var.
+// In production CLIENT_URL should be "https://germa-blue.vercel.app"
+const allowedOrigins = new Set();
+if (ENV.CLIENT_URL) {
+  allowedOrigins.add(ENV.CLIENT_URL.replace(/\/+$/, ""));
+}
+// Always allow localhost for development
+allowedOrigins.add("http://localhost:5173");
+allowedOrigins.add("http://localhost:3000");
+
+// Log on startup so we can verify the exact value on Render logs
+console.log("[CORS] CLIENT_URL env =", JSON.stringify(ENV.CLIENT_URL));
+console.log("[CORS] Allowed origins =", [...allowedOrigins]);
+
 app.use(cors({
   origin: (origin, callback) => {
+    // Allow requests with no origin (curl, server-to-server, health checks)
     if (!origin) return callback(null, true);
-    const cleanOrigin = origin.replace(/\/+$/, "");
-    const allowedClientUrl = ENV.CLIENT_URL ? ENV.CLIENT_URL.replace(/\/+$/, "") : "";
-    if (cleanOrigin === allowedClientUrl || cleanOrigin.endsWith(".vercel.app") || cleanOrigin.includes("localhost")) {
-      return callback(null, true);
+
+    const clean = origin.replace(/\/+$/, "");
+    if (allowedOrigins.has(clean)) {
+      return callback(null, clean); // Reflect the exact origin
     }
-    return callback(null, true);
+
+    // Log unexpected origins so we can diagnose in Render logs
+    console.warn("[CORS] Blocked origin:", origin);
+    return callback(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
 }));
