@@ -10,9 +10,10 @@ const aj = arcjet({
     // Shield protects your app from common attacks e.g. SQL injection
     shield({ mode: "LIVE" }),
     // Create a bot detection rule
+    // DRY_RUN because all traffic arrives via the reverse proxy (Render internal IP),
+    // so Arcjet misclassifies real browsers as HEADLESS_CHROME. Logs only, doesn't block.
     detectBot({
-      mode: "LIVE", // Blocks requests. Use "DRY_RUN" to log only
-      // Block all bots except the following
+      mode: "DRY_RUN",
       allow: [
         "CATEGORY:SEARCH_ENGINE", // Google, Bing, etc
         "CATEGORY:MONITOR",       // Uptime monitoring services (Render, Pingdom, etc)
