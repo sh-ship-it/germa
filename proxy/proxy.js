@@ -18,6 +18,8 @@ function getNextTarget() {
 const proxy = httpProxy.createProxyServer({
   ws: true,
   changeOrigin: true,
+  xfwd: true,
+  cookieDomainRewrite: "",
 });
 
 proxy.on("error", (err, req, res) => {

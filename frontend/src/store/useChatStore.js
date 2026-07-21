@@ -2,8 +2,6 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { useAuthStore } from "./useAuthStore";
-// import { useOptimistic } from "react";
-
 
 export const useChatStore = create((set, get) => ({
   allContacts: [],
@@ -29,7 +27,9 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get("/messages/contacts");
       set({ allContacts: res.data });
     } catch (error) {
-      toast.error(error.response?.data?.message || "something went wrong");
+      if (error.response?.status !== 401) {
+        toast.error(error.response?.data?.message || "something went wrong");
+      }
     } finally {
       set({ isUsersLoading: false });
     }
@@ -41,7 +41,9 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get("/messages/chats");
       set({ chats: res.data });
     } catch (error) {
-      toast.error(error.response?.data?.message || "something went wrong");
+      if (error.response?.status !== 401) {
+        toast.error(error.response?.data?.message || "something went wrong");
+      }
     } finally {
       set({ isUsersLoading: false });
     }
@@ -52,7 +54,9 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: res.data });
     } catch (error) {
-      toast.error(error.response?.data?.message || "something went wrong");
+      if (error.response?.status !== 401) {
+        toast.error(error.response?.data?.message || "something went wrong");
+      }
     } finally {
       set({ isMessagesLoading: false });
     }
