@@ -90,7 +90,7 @@ export const useAuthStore = create((set,get) => ({
     if (!authUser || get().socket?.connected) return;
      const socket = io(BASE_URL, {
       withCredentials: true, // this ensures cookies are sent with the connection
-      transports: ["polling", "websocket"], // start with polling, then upgrade to ws (needed for cross-origin)
+      transports: ["websocket"], // direct WebSocket connection bypasses proxy HTTP polling sticky session requirements
     });
 
     socket.connect();
