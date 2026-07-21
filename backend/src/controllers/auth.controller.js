@@ -1,9 +1,6 @@
-import { ENV } from "../lib/env.js";
 import User from "../model/User.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../lib/util.js";
-import { sendWelcomeEmail } from "../emails/emailHandlers.js";
-import { resendClient } from "../lib/resend.js";
 import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
@@ -39,26 +36,15 @@ export const signup = async (req, res) => {
     });
     
     if(newUser){
-
-        // generateToken(newUser._id, res);
-        // await newUser.save();
-
       const savedUser = await newUser.save();
-      generateToken(savedUser._id, res)
+      generateToken(savedUser._id, res);
 
-        res.status(201).json({
+      res.status(201).json({
         _id: newUser._id,
         fullName: newUser.fullName,
         email: newUser.email,
         profilePic: newUser.profilePic,
       });
-
-      try {
-        await sendWelcomeEmail(savedUser.email, savedUser.fullName,ENV.CLIENT_URL);
-      }catch(error){
-        console.error("Error sending welcome email:", error);
-      }
-
     }else{
       res.status(400).json({ message: "Failed to create user" });
     }

@@ -1,0 +1,13 @@
+{
+  "name": "proxy",
+  "version": "1.0.0",
+  "main": "proxy.js",
+  "type": "module",
+  "scripts": {
+    "start": "node proxy.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "http-proxy": "^1.18.1"
+  }
+}
