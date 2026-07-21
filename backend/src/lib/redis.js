@@ -4,7 +4,7 @@ import { ENV } from "./env.js";
 const REDIS_URL = ENV?.REDIS_URL || process.env.REDIS_URL || "redis://localhost:6379";
 
 export const redisClient = createClient({
-  url: REDIS_URI,
+  url: REDIS_URL,
   RESP: 2,
 });
 
