@@ -54,10 +54,8 @@ export const sendMessage = async (req, res) => {
     });
     await newMessage.save();
     
-    const recieverSocketId = getRecieverSocketId(receiverId);
-    if(recieverSocketId){
-      io.to(recieverSocketId).emit("newMessage", newMessage);
-    }
+    // Real-time message emission via Redis Adapter across all backend replicas
+    io.to(receiverId).emit("newMessage", newMessage);
     //send mesage in real time if user is online using socket io
     res.status(200).json(newMessage);
   } catch (error) {

@@ -3,10 +3,12 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
-// Derive socket URL from VITE_API_URL (strip "/api" suffix) so it points to the Render backend
-const BASE_URL = import.meta.env.MODE === "development"
-  ? "http://localhost:3000"
-  : (import.meta.env.VITE_API_URL?.replace(/\/api\/?$/, "") || "/");
+// Derive socket URL from VITE_API_URL (strip "/api" suffix)
+// Dev:  VITE_API_URL=http://localhost:8080/api → BASE_URL=http://localhost:8080
+// Prod: VITE_API_URL=/api                     → BASE_URL=/  (same-origin via Vercel proxy)
+const BASE_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "") || "/"
+  : "http://localhost:8080";
 
 export const useAuthStore = create((set,get) => ({
   authUser: null,

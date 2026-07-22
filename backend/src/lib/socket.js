@@ -51,6 +51,7 @@ io.on("connection", async (socket) => {
   console.log("a user connected ", socket.user.fullName);
   const userId = socket.userId?.toString() || socket.userId;
   userSocketMap[userId] = socket.id;
+  socket.join(userId);
 
   try {
     await redisClient.hSet("online_users", userId, socket.id);
