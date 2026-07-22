@@ -34,8 +34,8 @@ export const signup = async (req, res) => {
       email,
       password: hashedPassword,
     });
-    
-    if(newUser){
+
+    if (newUser) {
       const savedUser = await newUser.save();
       generateToken(savedUser._id, res);
 
@@ -45,16 +45,16 @@ export const signup = async (req, res) => {
         email: newUser.email,
         profilePic: newUser.profilePic,
       });
-    }else{
+    } else {
       res.status(400).json({ message: "Failed to create user" });
     }
 
 
-}catch(error){
+  } catch (error) {
     console.log("Error in signup controller:", error);
     res.status(500).json({ message: "Internal server error" });
 
-}
+  }
 };
 
 export const login = async (req, res) => {
@@ -66,10 +66,10 @@ export const login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user)  return res.status(400).json({ message: "Invalid credentials" });
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     const ispasswordCorrect = await bcrypt.compare(password, user.password);
-    if(!ispasswordCorrect) return res.status(400).json({ message: "Invalid credentials" });
+    if (!ispasswordCorrect) return res.status(400).json({ message: "Invalid credentials" });
 
     generateToken(user._id, res);
     res.status(200).json({
@@ -79,7 +79,7 @@ export const login = async (req, res) => {
       profilePic: user.profilePic,
     });
 
-  }catch(error){
+  } catch (error) {
     console.log("Error in login controller:", error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -87,8 +87,18 @@ export const login = async (req, res) => {
 };
 
 export const logout = (_, res) => {
-  res.clearCookie("jwt");
-  res.status(200).json({ message: "Logged out successfully" });
+  try {
+    res.cookie("jwt", "", {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: ENV.NODE_ENV === "production" ? "none" : "strict",
+      secure: ENV.NODE_ENV !== "development",
+    });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.log("Error in logout controller:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 export const updateProfile = async (req, res) => {
